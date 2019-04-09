@@ -3,45 +3,56 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: valecart <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: Valentin <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/04/09 14:27:12 by valecart          #+#    #+#             */
-/*   Updated: 2019/04/09 15:00:41 by valecart         ###   ########.fr       */
+/*   Created: 2019/04/08 20:23:51 by Valentin          #+#    #+#             */
+/*   Updated: 2019/04/09 14:26:45 by valecart         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#include "libft/libft.h"
+
 #include "get_next_line.h"
+
 #include <stdio.h>
 
 int		get_next_line(const int fd, char **line)
 {
-	static char		*str = NULL;
-	static char		*tmp = NULL;
-	char			buff[BUFF_SIZE + 1];
 	int				rd;
+	static char		buff[BUFF_SIZE];
+	static char			*tmp;
 
-	if (!(tmp = ft_strchr(str, '\n')))
+	if (tmp)
 	{
-	if ((rd = read(fd, buff, BUFF_SIZE)) == 0)
-		return (0);
+		if (*line)
+			free(*line);
+		*line = ft_strjoin(*line, tmp);
 	}
-	str = ft_strjoin(str, buff);
-	printf("str: >%s<\n\n\n", str);
-	if (!ft_strchr(str, '\n'))
-	{
-		get_next_line(fd, line);
-	}
+	if (!tmp)
+		rd = read(fd, buff, BUFF_SIZE);
 	else
+		rd = 1;
+	while (rd > 0)
 	{
-		tmp = ft_strchr(str, '\n');
-		*tmp = '\0';
-		*line = ft_memalloc(ft_strlen(str) + 1);
-		*line = ft_strcpy(*line, str);
-		str = tmp + 1;
+		/*if ((tmp = ft_strchr(*line, '\n')) != NULL)*/
+		/*{*/
+			/**tmp = '\0';*/
+			/*tmp++;*/
+			/*get_next_line(fd, line);*/
+			/*return (1);*/
+		/*}*/
+		if ((tmp = ft_strchr(buff, '\n')) != NULL)
+		{
+			*tmp = '\0';
+			tmp++;
+			*line = ft_strjoin(*line, buff);
+			return (1);
+		}
+		*line = ft_strjoin(*line, buff);
+		rd = read(fd, buff, BUFF_SIZE);
 	}
-	return (1);
+	/*if (rd > 0)*/
+		/*return (1);*/
+	return (0);
 }
-
 int main(int ac, char **av)
 {
 	char *line;
@@ -54,7 +65,7 @@ int main(int ac, char **av)
 	fd = open(av[1], O_RDONLY);
 	while (get_next_line(fd, &line) == 1)
 	{
-	//	printf("%d appel: %s\n", call, line);
+		printf("%d appel: %s\n", call, line);
 		call++;
 	}
 	return (0);
