@@ -6,56 +6,66 @@
 /*   By: valecart <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/09 14:27:12 by valecart          #+#    #+#             */
-/*   Updated: 2019/04/09 15:00:41 by valecart         ###   ########.fr       */
+/*   Updated: 2019/04/10 18:23:00 by valecart         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #include "libft/libft.h"
 #include "get_next_line.h"
-#include <stdio.h>
 
-int		get_next_line(const int fd, char **line)
+static char	*join_next_line(int const fd, char *str, int *rd)
 {
-	static char		*str = NULL;
-	static char		*tmp = NULL;
-	char			buff[BUFF_SIZE + 1];
-	int				rd;
+	char	buff[BUFF_SIZE + 1];
+	char	*tmp;
 
-	if (!(tmp = ft_strchr(str, '\n')))
+	tmp = NULL;
+	*rd = read(fd, buff, BUFF_SIZE);
+	if (*rd < BUFF_SIZE && buff[*rd - 1] != '\n')
 	{
-	if ((rd = read(fd, buff, BUFF_SIZE)) == 0)
-		return (0);
-	}
-	str = ft_strjoin(str, buff);
-	printf("str: >%s<\n\n\n", str);
-	if (!ft_strchr(str, '\n'))
-	{
-		get_next_line(fd, line);
+		buff[*rd] = '\n';
+		buff[*rd + 1] = '\0';
 	}
 	else
-	{
-		tmp = ft_strchr(str, '\n');
-		*tmp = '\0';
-		*line = ft_memalloc(ft_strlen(str) + 1);
-		*line = ft_strcpy(*line, str);
-		str = tmp + 1;
-	}
-	return (1);
+		buff[*rd] = '\0';
+	tmp = str;
+	str = ft_strjoin(str, buff);
+	ft_strdel(&tmp);
+	return (str);
 }
 
-int main(int ac, char **av)
+#include <stdio.h>
+int			get_next_line(int const fd, char **line)
 {
-	char *line;
-	int fd;
+	int				rd;
+	char		*tmp;
+	static char		*str = NULL;
 
-	(void)ac;
-	(void)av;
-	int		call = 1;
-#include <fcntl.h>
-	fd = open(av[1], O_RDONLY);
-	while (get_next_line(fd, &line) == 1)
+	if (!line || fd < 0)
+		return (-1);
+	rd = 1;
+	tmp = NULL;
+	if (!str)
+		str = ft_strnew(0);
+	while (rd > 0)
 	{
-	//	printf("%d appel: %s\n", call, line);
-		call++;
+		if ((tmp = ft_strchr(str, '\n')))
+		{
+			*tmp = '\0';
+			*line = ft_strdup(str);
+			tmp++;
+			str = ft_memmove(str, tmp, ft_strlen(tmp) + 1);
+			return (1);
+		}
+		str = join_next_line(fd, str, &rd);
 	}
-	return (0);
+	if (ft_strlen(str) > 1 && (tmp = ft_strchr(str, '\n')))
+	{
+		*tmp = '\0';
+		*line = ft_strdup(str);
+		ft_strdel(&str);
+		return (1);
+	}
+	if (rd == 0)
+		*line = ft_strnew(0);
+	return (rd);
 }
