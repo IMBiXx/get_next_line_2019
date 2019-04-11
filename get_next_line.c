@@ -6,7 +6,7 @@
 /*   By: valecart <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/09 14:27:12 by valecart          #+#    #+#             */
-/*   Updated: 2019/04/10 18:23:00 by valecart         ###   ########.fr       */
+/*   Updated: 2019/04/11 11:36:10 by valecart         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,9 +58,8 @@ int			get_next_line(int const fd, char **line)
 		}
 		str = join_next_line(fd, str, &rd);
 	}
-	if (ft_strlen(str) > 1 && (tmp = ft_strchr(str, '\n')))
+	if (ft_strlen(str) > 1 && ft_strrchr(str, '\0'))
 	{
-		*tmp = '\0';
 		*line = ft_strdup(str);
 		ft_strdel(&str);
 		return (1);

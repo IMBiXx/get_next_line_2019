@@ -6,7 +6,7 @@
 /*   By: Valentin <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/08 20:24:24 by Valentin          #+#    #+#             */
-/*   Updated: 2019/04/10 19:49:11 by valecart         ###   ########.fr       */
+/*   Updated: 2019/04/11 12:04:54 by valecart         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 # include <sys/types.h>
 # include <sys/uio.h>
 # include <unistd.h>
-# define BUFF_SIZE 2147483646
+# define BUFF_SIZE 10
 int		get_next_line(const int fd, char **line);
 
 #endif
